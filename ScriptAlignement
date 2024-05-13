@@ -1,0 +1,250 @@
+
+
+
+# important pour la suite !
+#Pour les fonctions qui utilisent des dicos , il faut assigner la sortie de fonction (dico) à une variable (ex:conserves=conserve(alignement,col))
+
+#Fonction pour trouver conservé entre 2 séquences
+def conserveseq(alignement2,col1,col2):
+  conserves={}   # dictionnaire pour stocker les aa conservés
+  for i in range(len(alignement2[col1])):  # pour i allant de 0 a la taille de l'alignement
+    aa = str(set(alignement2[col1,i]+alignement2[col2,i]))  # aa égale a l'aa dans la colonne pour chaque ligne de maniere unique
+    if len(aa)==5 and "-" not in aa :
+      aa=re.sub(".*{'",'',aa)
+      aa=re.sub("'}",'',aa)  #si 1 aa unique donc conservation exclusive
+      conserves[i+1]=aa # ajoute au dico
+  return conserves
+cons_ancetre_a=conserveseq(alignement3,11,10)
+for i in sorted(conserveAvsAncetre.keys()&specifiquesancetreV.keys()):
+  print(i,conserveAvsAncetre[i])
+
+#Fonction qui trouvent les acides aminés conservés entre RAGA et RAG vertebré
+def conserve(alignement,col):  # col = position de RAGA dans l'alignement
+  conserves={}   # dictionnaire pour stocker les aa conservés
+  for i in range(len(alignement[col:][0])):   # pour i allant de 0 a la taille de l'alignement
+    aa = str(set(alignement[col:,i]))  # aa égale a l'aa dans la colonne pour chaque ligne de maniere unique
+    if len(aa)==5 and "-" not in aa :
+      aa=re.sub(".*{'",'',aa)
+      aa=re.sub("'}",'',aa)  #si 1 aa unique donc conservation exclusive
+      conserves[i+1]=aa # ajoute au dico
+  return conserves
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# On cherche les conservé chez RAG transposon
+def conserve2(alignement,col):
+  conserves2={}   # dictionnaire pour stocker les aa conservés
+  for i in range(len(alignement[:col][0])):   # pour i allant de 0 a la taille de l'alignement
+    aa = str(set(alignement[:col,i]))
+    print(i+1,aa)  # aa égale a l'aa dans la colonne pour chaque ligne de maniere unique
+    if len(aa)==5 and "-" not in aa :
+      aa=re.sub(".*{'",'',aa)
+      aa=re.sub("'}",'',aa)  #si 1 aa unique donc conservation exclusive
+      conserves2[i+1]=aa # ajoute au dico
+  return conserves2
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Pour trouver variations type 2 = conservé chez les deux groupes mais d'acide aminé différent
+count=0
+def type2(conserves1,conserves2):
+  count=0          # en entrée les aa conservé chez RAGA/V et conserves2= aa conservé chez les autres RAG
+  diff={}
+  indel={}
+  for pos in sorted(conserves1.keys() & conserves2.keys()):
+    if conserves1[pos] != conserves2[pos] :
+      print(pos,conserves1[pos],"variation type 2 en ", conserves2[pos])
+      diff[pos]=conserves1[pos]
+      if conserves2[pos]=="-":
+        count+=1
+        indel[pos]=conserves2[pos]
+  print(len(diff),"de type 2")
+  print(count)
+  return diff
+
+# en sortie les positions de type 2
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+#fonction pour recuperer tous les acides aminés présents dans les autres especes dans chaque colonne
+def listaaexte(alignement,col):  # col = position du premier RAG du groupe exterieur dans l'alignement
+  exte={}   # dictionnaire pour stocker les aa
+  for y in range(len(alignement[col:][0])):   # pour y allant de 0 a la taille de l'alignement
+    aa2=alignement[col:,y]
+    exte[y+1]=aa2
+  return exte  # liste sous forme de séquence d'acide aminé par colonne
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+#Voir positions conservé jamais trouvé chez les autres  #= TYPE 1 , voir ici pas le script en dessous
+def specifiques(conserve1,exte):
+  specifiquesRAGAV2={}
+  for y in sorted(conserve1.keys() & exte.keys()):
+    if conserve1[y] not in exte[y]:
+      specifiquesRAGAV2[y]=conserve1[y]
+      print(conserve1[y],y,exte[y])
+  print(len(specifiquesRAGAV2),"positions spécifiques")
+  return specifiquesRAGAV2
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+acides_amines = {
+    'A': 'Aliphatique',
+    'R': 'Basique',
+    'N': 'Polar non chargé',
+    'D': 'Acide',
+    'C': 'souffré',
+    'E': 'Acide',
+    'Q': 'Polar non chargé',
+    'G': 'Aliphatique',
+    'H': 'Basique',
+    'I': 'Aliphatique',
+    'L': 'Aliphatique',
+    'K': 'Basique',
+    'M': 'souffréN',
+    'F': 'Aromatique',
+    'P': 'Aliphatique',
+    'S': 'Polar non chargé',
+    'T': 'Polar non chargé',
+    'W': 'Aromatique',
+    'Y': 'Aromatique',
+    'V': 'Aliphatique'
+}
+
+hydro={
+    'A': 'Hydrophobe',
+    'R': 'Hydrophile',
+    'N': 'Hydrophile',
+    'D': 'Hydrophile',
+    'C': 'Autre',
+    'E': 'Hydrophile',
+    'Q': 'Hydrophile',
+    'G': 'Autre',
+    'H': 'Hydrophile',
+    'I': 'Hydrophobe',
+    'L': 'Hydrophobe',
+    'K': 'Hydrophile',
+    'M': 'Hydrophobe',
+    'F': 'Hydrophobe',
+    'P': 'Autre',
+    'S': 'Hydrophile',
+    'T': 'Hydrophile',
+    'W': 'Hydrophile',
+    'Y': 'Hydrophile',
+    'V': 'Hydrophobe'
+}
+
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#fonction qui donne pour une séquence voulu les acides aminés par positions
+def sequencesp(alignement,pos):
+  seqpos={} #dico acides aminé par position
+  for x in range(len(alignement[pos])): # pour x allant de 0 a la taille de la séquence
+    aa=alignement[pos][x]
+    print(aa,x+1)
+    if aa != "-": #on prend le fichier a la ligne de la position dans l'alignement , et dans la colonne x
+      seqpos[x+1]=aa  # on l'ajoute au dico
+  return seqpos  # en sortie les aa et la position
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Comparaison de positions strictement différentes entre les conservés et des autres (comme en haut sauf qu'on donne que les positions)
+def positioncomparaison(conserves,exte):  # on prend en entrée les deux dico a comparer (les aa conservés et la tous les aa trouvés par colonne chez les autres(listeaaexte))
+  posdiff=[]                                # en entrée on donne le dico des aa conservé et un dico avec tous les AA présents par position dans le groupe ext
+  for pos in sorted(exte.keys()&conserves.keys()):  #pour chaque position en commun dans les deux dicos
+    if conserves[pos] not in exte[pos]:
+      print(pos,exte[pos],conserves[pos])  #si a la meme position on ne trouve strictement jamais l'acide aminés conservés dans la liste des autres
+      posdiff.append(pos) # on ajoute a la liste les positions
+  return posdiff  # en sortie une liste des positions ou on a des différences ( pas les aa)
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------COMPARAISON SPECIFIQUE DU GROUPE RAGA/V AVEC UNE SEQUENCE----------------------------------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Trouver les acides aminés conservé ou non ainsi que si c'est de la meme famille ou pas
+def SpecificCompare(conserves,sequence):  # en entrée on donne les acides aminés conservé et la séquence trouvé avec la fonction sequence precedente
+  cons={}  # liste des acides aminés conservés par rag et la séquence spécifique
+  notcons={} # Liste des acides aminés différents et par quoi ils sont remplacés
+  consfa={} #différent mais de meme famille
+  for pos in sorted(conserves.keys() & sequence.keys()):  #sorted car sinon les pos sont dans un ordre aléatoire
+    if sequence[pos] != conserves[pos] and sequence[pos] != '-':  #si ils sont différents et différent d'un -
+      if acides_amines[sequence[pos]] == acides_amines[conserves[pos]]: #si la famille est la meme
+        print(pos,conserves[pos],acides_amines[conserves[pos]],"pas conservée et remplacé par",sequence[pos],acides_amines[conserves[pos]])
+        consfa[pos]=conserves[pos]
+      else :
+        print(pos,conserves[pos],acides_amines[conserves[pos]],"pas conservée et remplacé par",sequence[pos],acides_amines[conserves[pos]])
+        notcons[pos]=conserves[pos]    #position pas conservé et pas de meme famille
+    if sequence[pos] == conserves[pos]: #si l'acide aminé a la position "pos" est le meme
+      print(pos,sequence[pos],acides_amines[conserves[pos]],"conservée")
+      cons[pos]=conserves[pos]   #on l'ajoute au dictionnaire des aa conservés
+  print(f"{len(cons)} positions conservés" , f"{len(notcons)} positions différentes et de famille différente",f"{len(consfa)} positions différentes de meme famille")
+  return notcons
+
+#deuxieme filtre pour trier selon le caractere hydrophile/hydrophobe
+def hydrop(notcons,sequence):
+  same={}
+  different={}
+  for pos in sorted(notcons.keys() & sequence.keys()):
+    if hydro[sequence[pos]] == hydro[notcons[pos]]:
+      print(pos,notcons[pos],"et",sequence[pos],"sont",hydro[sequence[pos]])
+      same[pos]=notcons[pos]
+    else :
+      print(pos,notcons[pos],"est",hydro[notcons[pos]],"alors que",sequence[pos],"est",hydro[sequence[pos]])
+      different[pos]=notcons[pos]
+  return  f"{len(same)} positions de meme caractère" , f"{len(different)} de caractère différent"
+
+#Trouver position reel de l'acide aminé sur RAGLA
+#on colle la sequence souhaité
+fasta="MSLQPLTAVNCGSLVQPGFSLLDLEGDVYLFGQKGWPKRSCPTGIFGVRIKKGELKLRAISFSNNSSYLPPLRCPAIAHFEAQDGKPECYLIHGGRTPNNELSSSLYMLSVDSRGCNRKVTLRCEEKELVGDVPSARYGHTLSVINSRGKTACVLFGGRSYMPPTERTTQNWNSVGDCPPQVYLIDLEFGCCTAHTLPELTDGQSFHVALARQDCVYFLGGHILSSDCRPSRLIRLHVELLLGSPVLTCTILHEGLTITSAIASPIGYHEYIIFGGYQSETQKRMECTYVGLDDVGVHMESREPPQWTSEISHSRTWFGGSLGKGTALVAIPSEGNPTPPEAYHFYQVSFQKEQDGEATAQGCSQESTDFEDSAPLEDSEELYFGREPHELEYSSDVEGDTYNEEDEEDESQTGYWIKCCLSCQVDPNIWEPYYSTELTRPAMIFCSRGEGGHWVHAQCMELPESLLLQLSQDNSKYFCLDHGGLPKQEMTPPKQMLPVKRVPMKMTHRKAPVSLKMTPAKKTFLRRLFD"
+print(fasta.find("KRSCPT")+1)
+print(fasta.find("GIFGVR")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+print(fasta.find("YLPPLR")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+print(fasta.find("YLIHGG")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+print(fasta.find("CTILHE")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+print(fasta.find("ELYFGR")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+print(fasta.find("TELTRP")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+print(fasta.find("")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+print(fasta.find("")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+print(fasta.find("")+1) #demande position de l'aa associé au motif , faire +1 pour position reelle
+ #demande position de l'aa associé au motif , faire +1 pour posit #demande position de l'aa associé au motif , faire +1 pour position reelle
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------COMPARAISON ENTRE GROUPE RAGA/V ET LES TRANSPOSONS SUR LES POSITIONS STRICTEMENT SPECIFIQUES-------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#Pour trouver les familles et le caractere hydrophobe/hydrophile a chaque position chez les transposon(groupe exte)
+def familleexte(exte,acides_amines,hydro):  # en entrée le groupe exte sous forme séquence , les dico aa et hydro
+  familleexte={}
+  for pos in exte:
+    familleexte[pos]=""
+    for lettre in str(set(exte[pos])):
+      if lettre in acides_amines and lettre not in familleexte :
+        if acides_amines[lettre] not in familleexte[pos]:
+          familleexte[pos]+=f" {acides_amines[lettre],hydro[lettre]}"
+  print(familleexte,pos)
+  return familleexte  # en sortie toutes les familles d'aa et le caractere hydro pour chaque position
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+ #Pour trouver les positions ou il y a une différence de famille entre RAGA/V conservé et les transposons
+ def famillediff(specifiques,acides_amines,familleexte,exte): # en entrée les positions spécifique de RAGA/V , Le dico des aa , et le dico des familles du groupe exte
+  famillediff={}
+  for pos in specifiques.keys():
+    if acides_amines[specifiques[pos]] not in familleexte[pos] :
+      famillediff[pos]=specifiques[pos]
+      print(pos,specifiques[pos],acides_amines[specifiques[pos]],exte[pos],familleexte[pos] ,"de famille différente")
+  print(len(famillediff))
+  return famillediff
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+#Trouver parmis les différent de famille , si le caractere hydro est différent aussi
+def hydrdiff(famillediff,hydro,familleexte):  # en entrée on donne les positions de familles différente , le dico des hydro , et le dico des familles/caractere du groupe exte
+  hydrdiff={}
+  for pos in famillediff:
+    if hydro[famillediff[pos]] not in familleexte[pos]:
+      hydrdiff[pos]=famillediff[pos]
+      print(pos,famillediff[pos],hydro[famillediff[pos]],familleexte[pos])
+  return hydrdiff # en sortie les positions différente de famille et de caractere hydro
+
+
