@@ -1,22 +1,26 @@
-
+#@ script alignement acide aminé
+!pip install biopython
+from re import I
+from Bio import AlignIO
+import re
+# Charger l'alignement FASTA
+alignement = AlignIO.read("AlignementRAG.fas", "fasta")
 
 
 # important pour la suite !
 #Pour les fonctions qui utilisent des dicos , il faut assigner la sortie de fonction (dico) à une variable (ex:conserves=conserve(alignement,col))
 
 #Fonction pour trouver conservé entre 2 séquences
-def conserveseq(alignement2,col1,col2):
+def conserveseq(alignement,col1,col2):
   conserves={}   # dictionnaire pour stocker les aa conservés
-  for i in range(len(alignement2[col1])):  # pour i allant de 0 a la taille de l'alignement
-    aa = str(set(alignement2[col1,i]+alignement2[col2,i]))  # aa égale a l'aa dans la colonne pour chaque ligne de maniere unique
+  for i in range(len(alignement[col1])):  # pour i allant de 0 a la taille de l'alignement
+    aa = str(set(alignement[col1,i]+alignement[col2,i]))  # aa égale a l'aa dans la colonne pour chaque ligne de maniere unique
     if len(aa)==5 and "-" not in aa :
       aa=re.sub(".*{'",'',aa)
       aa=re.sub("'}",'',aa)  #si 1 aa unique donc conservation exclusive
       conserves[i+1]=aa # ajoute au dico
   return conserves
-cons_ancetre_a=conserveseq(alignement3,11,10)
-for i in sorted(conserveAvsAncetre.keys()&specifiquesancetreV.keys()):
-  print(i,conserveAvsAncetre[i])
+
 
 #Fonction qui trouvent les acides aminés conservés entre RAGA et RAG vertebré
 def conserve(alignement,col):  # col = position de RAGA dans l'alignement
